@@ -2,7 +2,7 @@ import re
 
 nome = "Jose Pedro Fernandes"
 
-pattern = re.compile(r'[A-Z][a-z]*( [A-Z][a-z]*)*')
+pattern = re.compile(r'^[A-Z][a-z]*( [A-Z][a-z]*)*$')
 
 print(pattern.match(nome))
 
