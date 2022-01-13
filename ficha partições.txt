@@ -1,0 +1,3 @@
+pvs -> mostra os as partições e os VG (volume groups) das partições
+lvcreate -n lvstg01 -L 500M vgasi01
+mkfs .ext3 4096M
