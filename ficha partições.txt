@@ -1,3 +1,17 @@
 pvs -> mostra os as partições e os VG (volume groups) das partições
 lvcreate -n lvstg01 -L 500M vgasi01
-mkfs .ext3 4096M
+mkfs.ext3 -b 4096 /dev/vgasi01/lvstg01
+
+nano /etc/fstab
+por na fstab -> /dev/vgasi01/lvstg01 /mnt/asi2021 ext3 defaults 0 0
+criar pasta mnt/asi2021
+
+mount -a
+df -k
+lvs
+
+lvextend -L +150M /dev/vgasi01/lvstg01
+resize2fs
+
+
+
