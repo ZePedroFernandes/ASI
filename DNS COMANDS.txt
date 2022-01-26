@@ -1,0 +1,1 @@
+ficheiro com servidores de dns a perguntar nomes: /etc/resolv.conf
