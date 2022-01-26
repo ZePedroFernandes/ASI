@@ -1,17 +1,67 @@
+Consultar a lista de discos na máquina: ls -lad /dev/sd* | lsblk
+
+# Criar as partições de disco e tornar o tipo das partições em 8e -> Linux LVM
+  fdisk /dev/sdb -> gerir partições disco sdb
+    n
+      p
+      1
+      1
+      +1024M
+    p
+    t
+      8e
+    w
+}
+
 pvs -> mostra os as partições e os VG (volume groups) das partições
-lvcreate -n lvstg01 -L 500M vgasi01
-mkfs.ext3 -b 4096 /dev/vgasi01/lvstg01
+vgs -> mostra os volume groups
 
+# Criar pishical volumes
+pvcreate /dev/sdb1
+pvcreate /dev/sdb2
+pvcreate /dev/sdc1
+pvcreate /dev/sdc2
+pvcreate /dev/sdd1
+pvcreate /dev/sdd2
+
+# Criar volume group
+vgcreate vgasi01 /dev/sdb1
+
+# Extender volume group 
+vgextend vgasi01 /dev/sdc1
+vgextend vgasi01 /dev/sdd1
+
+# Criar logical volume com 500M nome lvasi01 no volume group vgasi01
+lvcreate -n lvasi01 -L 500M vgasi01
+
+# Formatar logical volume com um tipo de ficheiros, neste caso ext3 com um block size de 4096
+mkfs.ext3 -b 4096 /dev/vgasi01/lvasi01
+
+# Atualizar a fstab para definir o mountpoint do file system criado na pasta asi2021
 nano /etc/fstab
-por na fstab -> /dev/vgasi01/lvstg01 /mnt/asi2021 ext3 defaults 0 0
-criar pasta mnt/asi2021
+por na fstab -> /dev/vgasi01/lvasi01 /asi2021 ext3 defaults 0 0
+criar pasta asi2021
 
+# monta todos os file systems presentes na fstab
 mount -a
+
+# mostra os file systems montados
 df -k
 lvs
 
-lvextend -L +150M /dev/vgasi01/lvstg01
-resize2fs
+# Extender o logical lvasi01 volume em 150M
+lvextend -L +150M /dev/vgasi01/lvasi01
 
+# Aplicar as mudanças do passo anterior
+resize2fs /dev/vgasi01/lvasi01
 
+# Criar grupo vgasi02 
+vgcreate vgasi02 /dev/sdb2 /dev/sdc2 /dev/sdd2
 
+# Criar Logical volume
+lvcreate -L 250M -n lvasi02 vgasi02
+
+# Reduzir espaço (150M) no lvasi02 e no gvasi02 e passar esse espaço para o vgasi01
+lvreduce -L -150M /dev/vgasi02/lvasi02
+vgreduce vgasi02 /dev/sdd2 # É necessário remover o disco fisico do volume group 2 e adicioná-lo ao volume group 1
+vgextend vgasi01 /dev/sdd2
