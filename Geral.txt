@@ -1,0 +1,8 @@
+1) servidores dns que a máquina pergunta nomes: ficheiro com servidores de dns a perguntar nomes: /etc/resolv.conf
+2) mudar IP da máquina 
+	nano /etc/netplan/00-installer-config.yaml 
+	enp0s8:
+	  addresses: [192.168.57.50/24]	
+	netplan apply
+3) Sair da caixa de email "q"
+4) 

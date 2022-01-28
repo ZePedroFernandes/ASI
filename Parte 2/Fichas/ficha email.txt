@@ -1,0 +1,38 @@
+# Instalar Postfix
+apt-get install postfix
+
+# Configurar o servidor postfix para o domínio aulas.asi
+nano /etc/postfix/main.cf
+
+(alterar) myhostame = smp.aulas.asi
+(adicionar) mydomain = aulas.asi
+(alterar) mydestination = $mydomain, localhost.localdomain, localhost
+
+# Definir o servidor stp no dns
+$TTL 1D
+aulas.asi.      IN      SOA     ns1.aulas.asi. . (
+                2022012801      ;Serial
+                28800           ;Refresh
+                3600            ;Retry
+                604800          ;Expire
+                38400           ;Minimun
+        )
+        IN      MX      5       smtp.aulas.asi.
+
+smtp            IN      A       192.168.57.50
+
+
+systemctl reload bind9
+
+# Criar utilizadores mail1 mail2 e mail3
+
+adduser mail1
+adduser mail2
+adduser mail3
+
+# instalar utilitários de email
+apt-get install mailutils
+
+# Enviar email 
+mail -s "assunto" mail1@aulas.asi (ctrl + D para enviar email)
+
