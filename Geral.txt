@@ -5,4 +5,6 @@
 	  addresses: [192.168.57.50/24]	
 	netplan apply
 3) Sair da caixa de email "q"
-4) 
+4) Login com outro user su - mail1
+5) Logout com outro user "logout"
+6) Ver portas a correr netstat -ano (| grep (porta))
