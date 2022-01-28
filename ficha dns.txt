@@ -156,7 +156,7 @@ nano /etc/bind/named.conf.local
 
 zone "aulas.asi" {
         type slave;
-        file "/etc/bind/zones/aulas.asi.db";
+        file "aulas.asi.db";
 	masters {192.168.57.20;};
 };
 
