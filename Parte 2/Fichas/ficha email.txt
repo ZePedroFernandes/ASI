@@ -1,0 +1,78 @@
+# Instalar Postfix
+apt-get install postfix
+
+# Configurar o servidor postfix para o domínio aulas.asi
+nano /etc/postfix/main.cf
+
+(alterar) myhostame = smp.aulas.asi
+(adicionar) mydomain = aulas.asi
+(alterar) mydestination = $mydomain, localhost.localdomain, localhost
+
+# Definir o servidor stp no dns
+$TTL 1D
+aulas.asi.      IN      SOA     ns1.aulas.asi. . (
+                2022012801      ;Serial
+                28800           ;Refresh
+                3600            ;Retry
+                604800          ;Expire
+                38400           ;Minimun
+        )
+        IN      MX      5       smtp.aulas.asi.
+
+smtp            IN      A       192.168.57.50
+
+
+systemctl reload bind9
+
+# Criar utilizadores mail1 mail2 e mail3
+
+adduser mail1
+adduser mail2
+adduser mail3
+
+# instalar utilitários de email
+apt-get install mailutils
+
+# Enviar email 
+mail -s "assunto" mail1@aulas.asi (ctrl + D para enviar email)
+
+# Criar um alias (grupo) chamado grupo1
+nano /etc/aliases
+
+postmaster: root
+grupo1: mail1@aulas.asi, mail2@aulas.asi, mail3@aulas.asi
+
+# Publicar o aliases
+postalias /etc/aliases
+
+# Forward emails
+su - mail1
+nano .forward
+mail2@aulas.asi
+
+# Dar as permissões certas ao ficheiro .forward
+chmod 0640 .forward
+
+# Mudar o formato de mbox para maildir
+nano /etc/postfix/main.cf
+(incluir no fim) home_mailbox = Maildir/
+systemctl reload postfix
+
+# Dovecot install
+apt-get install dovecot-imapd dovecot-pop3d
+
+# Ficheiro de configuração
+nano /etc/dovecot/dovecot.conf
+
+# Pasta de protocolos
+nano /usr/share/dovecot/protocols.d/
+
+# Reinicar o dovecor
+systemctl restart dovecot
+
+# Alterar para mail dir
+nano /etc/dovecot/conf.d/10-mail.conf
+
+comentar linha 		"mail_location = mbox:~/mail:INBOX=/var/mail/%u"
+descomentar linha 	"mail_location = maildir:~/Maildir"
+systemctl restart dovecot
