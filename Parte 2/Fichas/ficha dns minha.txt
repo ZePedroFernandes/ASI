@@ -1,0 +1,161 @@
+# Instalar o BIND9
+sudo apt install bind9 bind9-utils
+
+# Configurar o servidor DNS na máquina ASI-DNS-PRI
+## Colocar o BIND no modo IPv4
+nano /etc/default/named
+
+Colocar no ficheiro 
+{
+  #
+  # run resolvconf?
+  RESOLVCONF=no
+  
+  # startup options for the server
+  OPTIONS="-u bind -4"
+}
+
+# Reiniciar o serviço
+systemctl restart bind9.service
+
+# a/b) Colocar o servidor DNS disponível no IP 192.168.57.20 e access control list
+nano /etc/bind/named.conf.options
+
+acl trusted {192.168.57.0/24;};
+
+options {
+        directory "/var/cache/bind";
+
+        recursion yes;
+        allow-recursion {trusted;};
+        listen-on { 192.168.57.20; };
+        allow-transfer { none; };
+        dnssec-validation auto;
+        forwarders {
+                172.20.6.100;
+                8.8.8.8;
+        };
+        empty-zones-enable no;
+};
+
+# Reiniciar o serviço
+systemctl restart bind9.service
+
+# Definir o serviço para arrancar automaticamente
+systemctl enable named
+
+# Verificar estado do serviço
+systemctl status bind9.service
+
+# Criar uma zona/domínio do tipo master/primário denominada aulas.asi
+nano /etc/bind/named.conf.local
+
+zone "aulas.asi" {
+        type master;
+        file "/etc/bind/zones/aulas.asi.db";
+        allow-query {trusted;};
+        allow-transfer {192.168.57.30;};
+};
+
+# Criar o ficheiro anterior "aulas.asi.db"
+mkdir /etc/bind/zones
+nano /etc/bind/zones/aulas.asi.db
+
+$TTL 1D
+aulas.asi.      IN      SOA     ns1.aulas.asi. . (
+                2021120701      ;Serial
+                28800           ;Refresh
+                3600            ;Retry
+                604800          ;Expire
+                38400           ;Minimun
+        )
+        IN      NS              ns1.aulas.asi.
+        IN      NS              ns2.aulas.asi.
+
+ns1             IN      A       192.168.57.20
+ns2             IN      A       192.168.57.30
+containerSRV    IN      A       192.168.57.10
+erp             IN      A       10.3.2.10
+rh              IN      CNAME   erp
+
+# Configurar /etc/resolv.conf -> colocar nas outras maquinas para elas utilizarem estes servidores de dns
+nano /etc/resolv.conf
+
+nameserver 192.168.57.20
+nameserver 192.168.57.30
+nameserver 127.0.0.53
+options edns0 trust-ad
+search lan # Ou "search ad.estg.ipp.pt" Se estivermos na escola
+
+# Trocar ip do host erp.aulas.asi para 20.10.5.10
+nano /etc/bind/zones/aulas.asi.db
+
+# Finalização da resolução de nomes
+# Agora vamos fazer a resolução inversa de nomes
+
+nano /etc/bind/named.conf.local
+
+zone "aulas.asi" {
+        type master;
+        file "/etc/bind/zones/aulas.asi.db";
+        allow-query {trusted;};
+        allow-transfer {192.168.57.30;};
+};
+
+zone "in-addr.arpa" {
+        type master;
+        file "/etc/bind/zones/reverse-aulas.asi.db";
+        allow-transfer {192.168.57.30;};
+};
+
+# Especificar caminhos
+nano /etc/bind/zones/reverse-aulas.asi.db
+
+$TTL 86400
+@       IN      SOA     ns1.aulas.asi. root.ns1.aulas.asi. (
+                2021120708      ;Serial
+                28800           ;Refresh
+                3600            ;Retry
+                604800          ;Expire
+                38400           ;Minimun
+        )
+        IN      NS              ns1.aulas.asi.
+        IN      NS              ns2.aulas.asi.
+
+192.168.57.20   IN      PTR     ns1.aulas.asi.
+192.168.57.30   IN      PTR     ns2.aulas.asi.
+20.10.5.10      IN      PTR     erp.aulas.asi.
+20.10.5.10      IN      PTR     rh.aulas.asi.
+
+
+# Para o slave voltar a instalar o bind9, e colocar no modo IPv4
+
+# Colocar o servidor DNS disponível no IP 192.168.57.20 e access control list
+
+nano /etc/bind/named.conf.options
+
+acl trusted {192.168.57.0/24;};
+
+options {
+        directory "/var/cache/bind";
+
+        recursion yes;
+        allow-recursion {trusted;};
+        listen-on {192.168.57.30;};
+        allow-transfer {none;};
+        dnssec-validation auto;
+        forwarders {
+                172.20.6.100;
+                8.8.8.8;
+        };
+        empty-zones-enable no;
+};
+
+# Criar uma zona/domínio do tipo slave denominada aulas.asi
+nano /etc/bind/named.conf.local
+
+zone "aulas.asi" {
+        type slave;
+        file "/etc/bind/zones/aulas.asi.db";
+	masters {192.168.57.20;};
+};
