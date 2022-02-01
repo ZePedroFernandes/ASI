@@ -8,3 +8,4 @@
 4) Login com outro user su - mail1
 5) Logout com outro user "logout"
 6) Ver portas a correr netstat -ano (| grep (porta))
+7) Listar ficheiros e permissões ls -la

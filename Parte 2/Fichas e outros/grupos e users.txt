@@ -1,0 +1,22 @@
+# Criar grupo ALUNO (gid=601) na máquina 1 e o grupo PROF(gid=602) na máquina 2
+groupadd -g 601 ALUNO
+groupadd -g 602 PROF
+
+# Ver grupos
+cat /etc/group
+
+# Ver utilizadores num grupo
+getent group <Nome do grupo>
+
+# Ver todos os utilizadores
+cat /etc/passwd
+
+# Adicionar user e depois dar-lhe uma password
+useradd pedro
+passwd pedro
+
+# Criar home apra o utilizador 
+mkhomedir_helper jose
+
+# Adicionar utilizador a um grupo
+usermod -a -G <nome grupo> <nome user>

@@ -1,0 +1,22 @@
+minuto(0-59)	hora(0-23)	dia(1-31)	mes(1-12)	dia_semana(0-6)(dom,seg,...)	comando
+
+* any value
+, value list separator
+- range of values
+/ step values
+
+
+# todos os minutos 0 e 1 
+0,1 * * * * comando
+
+# de dois em dois minutos
+*/2 * * * * comando
+
+# entre as 12:00 e as 13:30 e entre as 15:30 e as 16:30 com frequência de 10 minutos executar o comando copia.sh
+# min   hora    dia     mes     dia_sem command
+*/10    12      *       *       *       ./copia.sh
+0-30/10 13      *       *       *       ./copia.sh
+30-59/10 15     *       *       *       ./copia.sh
+0-30/10 16      *       *       *       ./copia.sh
+
+
