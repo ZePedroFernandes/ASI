@@ -130,6 +130,19 @@ $TTL 86400
 
 # Para o slave voltar a instalar o bind9, e colocar no modo IPv4
 
+## Colocar o BIND no modo IPv4
+nano /etc/default/named
+
+Colocar no ficheiro 
+{
+  #
+  # run resolvconf?
+  RESOLVCONF=no
+  
+  # startup options for the server
+  OPTIONS="-u bind -4"
+}
+
 # Colocar o servidor DNS disponível no IP 192.168.57.20 e access control list
 
 nano /etc/bind/named.conf.options

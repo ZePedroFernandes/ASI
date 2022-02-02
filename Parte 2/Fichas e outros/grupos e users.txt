@@ -12,7 +12,7 @@ getent group <Nome do grupo>
 cat /etc/passwd
 
 # Adicionar user e depois dar-lhe uma password
-useradd pedro
+adduser pedro
 passwd pedro
 
 # Criar home apra o utilizador 

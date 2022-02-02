@@ -1,3 +1,8 @@
+### Para usar o imap é preciso mudar para maildir
+smtp - porta 25
+smtp - porta 143
+
+
 # Instalar Postfix
 apt-get install postfix
 
@@ -9,6 +14,7 @@ nano /etc/postfix/main.cf
 (alterar) mydestination = $mydomain, localhost.localdomain, localhost
 
 # Definir o servidor stp no dns
+nano /etc/bind/zones/aulas.asi.db
 $TTL 1D
 aulas.asi.      IN      SOA     ns1.aulas.asi. . (
                 2022012801      ;Serial
@@ -66,6 +72,11 @@ nano /etc/dovecot/dovecot.conf
 
 # Pasta de protocolos
 nano /usr/share/dovecot/protocols.d/
+
+# Adicionar no dns
+
+imap            IN      A       192.168.57.50
+pop3		IN	A	192.168.57.50
 
 # Reinicar o dovecor
 systemctl restart dovecot

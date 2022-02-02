@@ -1,6 +1,9 @@
 
 # Adicionar chaves ssh (ex 1b do teste modelo) (para este passo é necessário criar o diretório do utilizador na máquina de destino com o comando mkhomedir_helper <nome do utilizador>) 
-ssh-keygen -t rsa -b 2048
+jose: ssh-keygen -t rsa -b 2048
 (clicar enter até finalizar o processo)
-ssh-copy-id antonio@192.168.57.100
-ssh-copy-id pedro@192.168.57.100
+jose: ssh-copy-id antonio@192.168.57.100
+jose: ssh-copy-id pedro@192.168.57.100
+
+
+ssh-copy-id admin@192.168.57.120
